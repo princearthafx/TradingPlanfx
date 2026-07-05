@@ -222,6 +222,9 @@ function setupNavigation() {
             cancelEditMode();
         }
     }
+    
+    // Expose globally
+    window.switchTab = switchTab;
 
     // Bind sidebar clicks
     menuItems.forEach(item => {
