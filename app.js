@@ -1320,7 +1320,7 @@ function loadFirebaseConfig() {
     
     // Default Fallback: Hardcoded Firebase config for prince-arthafx so users don't see any setup modal!
     return {
-        apiKey: "AIzaSyDFQdU9xEKdPnr1Fep102wq14iBwqkGSsU",
+        apiKey: "AIzaSyDFQdU9xEKdPnr1Fep1O2wq14iBwqkGSsU",
         authDomain: "prince-arthafx.firebaseapp.com",
         projectId: "prince-arthafx",
         storageBucket: "prince-arthafx.firebasestorage.app",
@@ -1330,11 +1330,15 @@ function loadFirebaseConfig() {
     };
 }
 
-function initFirebase() {
+async function initFirebase() {
     const config = loadFirebaseConfig();
     if (!config) return false;
     
     try {
+        // If an app is already initialized, delete it first to prevent already-exists errors
+        if (firebase.apps.length > 0) {
+            await firebase.app().delete();
+        }
         firebaseApp = firebase.initializeApp(config);
         auth = firebase.auth();
         db = firebase.firestore();
@@ -1355,7 +1359,7 @@ function initFirebase() {
     }
 }
 
-function saveFirebaseConfig() {
+async function saveFirebaseConfig() {
     let jsonStr = document.getElementById('firebase-config-json').value.trim();
     if (!jsonStr) {
         alert('Mohon masukkan JSON Config Firebase!');
@@ -1381,7 +1385,7 @@ function saveFirebaseConfig() {
             throw new Error('Konfigurasi tidak lengkap (apiKey atau projectId tidak ada).');
         }
         localStorage.setItem('prince_artha_firebase_config', JSON.stringify(parsed));
-        if (initFirebase()) {
+        if (await initFirebase()) {
             alert('Koneksi Firebase Berhasil Disimpan!');
         }
     } catch (e) {
