@@ -2453,6 +2453,8 @@ textarea:focus {
     justify-content: center;
     align-items: center;
     z-index: 10000;
+    opacity: 1 !important;
+    pointer-events: all !important;
 }
 
 .modal-content {
