@@ -2441,7 +2441,8 @@ textarea:focus {
 }
 
 /* Modal overlays */
-.modal-overlay {
+.modal-overlay,
+.model-overlay {
     position: fixed;
     top: 0;
     left: 0;
