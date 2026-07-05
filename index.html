@@ -19,6 +19,10 @@
     <meta name="theme-color" content="#d4af37">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Firebase Compat SDK CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -49,6 +53,9 @@
                 <a href="#" class="menu-item" data-tab="settings">
                     <i class="fa-solid fa-sliders"></i> <span>Pengaturan</span>
                 </a>
+                <a href="#" class="menu-item" id="menu-admin" data-tab="admin" style="display: none;">
+                    <i class="fa-solid fa-user-shield"></i> <span>Panel Admin</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -59,6 +66,17 @@
                         <span id="pnl-total-percentage" class="growth-value pos">+0.00%</span>
                         <span class="growth-label">Net PnL</span>
                     </div>
+                </div>
+                
+                <!-- Logged In User Profile Block -->
+                <div class="user-profile-bar" id="user-profile-bar" style="display: none;">
+                    <div class="profile-details">
+                        <span id="user-display-name" class="profile-name">Username</span>
+                        <span id="user-display-email" class="profile-email">user@email.com</span>
+                    </div>
+                    <button class="btn-logout" id="btn-logout" title="Keluar">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
                 </div>
             </div>
         </aside>
@@ -554,8 +572,226 @@
                     </div>
                 </section>
 
+                <!-- Tab 6: Admin Panel (Visible to Admins Only) -->
+                <section id="tab-admin" class="tab-content">
+                    <div class="admin-panel-layout">
+                        <!-- Sidebar list of registered users -->
+                        <div class="admin-users-sidebar glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-users text-gold"></i> Pengguna Jurnal</h3>
+                            </div>
+                            <div class="users-list-scroll">
+                                <ul class="admin-users-list" id="admin-users-list">
+                                    <!-- Populated dynamically via JS -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard preview of the selected user -->
+                        <div class="admin-user-preview-area">
+                            <div class="preview-empty-state glass-card" id="admin-empty-state">
+                                <i class="fa-solid fa-user-check text-gold"></i>
+                                <h3>Pilih Pengguna</h3>
+                                <p class="text-muted">Pilih salah satu pengguna di panel kiri untuk memantau data trading plan & jurnal mereka secara real-time.</p>
+                            </div>
+
+                            <div class="preview-details-container" id="admin-user-details" style="display: none;">
+                                <div class="user-meta-header glass-card">
+                                    <div class="user-basic-info">
+                                        <h2 id="admin-user-name">Nama Pengguna</h2>
+                                        <p id="admin-user-email" class="text-muted">user@gmail.com</p>
+                                    </div>
+                                    <div class="user-pnl-summary">
+                                        <div class="summary-item">
+                                            <span class="label">MODAL AWAL</span>
+                                            <span class="value" id="admin-initial-capital">Rp 150.000.000</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="label">SALDO SAAT INI</span>
+                                            <span class="value" id="admin-current-capital">Rp 150.000.000</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="label">NET PNL</span>
+                                            <span class="value" id="admin-net-pnl">Rp 0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- User Statistics & Chart Dashboard -->
+                                <div class="metrics-grid">
+                                    <div class="metric-card">
+                                        <div class="metric-icon pnl"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                                        <div class="metric-info">
+                                            <span class="metric-label">Win Rate</span>
+                                            <h3 class="metric-value" id="admin-stat-winrate">0%</h3>
+                                        </div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-icon winrate"><i class="fa-solid fa-chart-pie"></i></div>
+                                        <div class="metric-info">
+                                            <span class="metric-label">Total Jurnal</span>
+                                            <h3 class="metric-value" id="admin-stat-total-trades">0</h3>
+                                        </div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-icon trades"><i class="fa-solid fa-circle-check"></i></div>
+                                        <div class="metric-info">
+                                            <span class="metric-label">Hari Profit</span>
+                                            <h3 class="metric-value text-success" id="admin-stat-profit-days">0</h3>
+                                        </div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-icon profitfactor"><i class="fa-solid fa-circle-xmark"></i></div>
+                                        <div class="metric-info">
+                                            <span class="metric-label">Hari Loss</span>
+                                            <h3 class="metric-value text-danger" id="admin-stat-loss-days">0</h3>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="dashboard-charts-grid" style="grid-template-columns: 1fr; margin-bottom: 24px;">
+                                    <div class="chart-card glass-card">
+                                        <div class="card-header">
+                                            <h3><i class="fa-solid fa-chart-line text-gold"></i> Kurva Pertumbuhan Modal (Equity)</h3>
+                                        </div>
+                                        <div class="chart-container" style="position: relative; height: 320px; width: 100%;">
+                                            <canvas id="adminEquityChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- User Journal History Table -->
+                                <div class="glass-card">
+                                    <div class="card-header">
+                                        <h3><i class="fa-solid fa-table-list text-gold"></i> Riwayat Transaksi Jurnal Pengguna</h3>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="journal-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tanggal</th>
+                                                    <th>Hari</th>
+                                                    <th>Instrumen</th>
+                                                    <th>Hasil</th>
+                                                    <th>Nominal PnL</th>
+                                                    <th>Catatan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="admin-journal-tbody">
+                                                <!-- Populated dynamically via JS -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         </main>
+    </div>
+
+    <!-- Auth Overlay (Blocks Dashboard until Login) -->
+    <div class="auth-overlay" id="auth-overlay">
+        <div class="auth-card glass-card">
+            <div class="auth-logo-area">
+                <img src="logo.jpg" alt="Prince Artha Logo" class="auth-brand-logo">
+                <h2>PRINCE ARTHA FX</h2>
+                <p class="text-muted">Daily Trading Plan & Journal System</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab active" id="tab-btn-login">Masuk</button>
+                <button type="button" class="auth-tab" id="tab-btn-register">Daftar</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active">
+                <div class="form-group">
+                    <label for="login-email">Email Address <span class="required">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" id="login-email" required placeholder="Masukkan email Anda">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password <span class="required">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="login-password" required placeholder="Masukkan password Anda">
+                    </div>
+                </div>
+                <button type="submit" class="btn-gold w-100" style="justify-content: center; margin-top: 10px;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label for="register-name">Nama Lengkap <span class="required">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-user input-icon"></i>
+                        <input type="text" id="register-name" placeholder="Masukkan nama lengkap Anda">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email Address <span class="required">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                        <input type="email" id="register-email" placeholder="Masukkan email Anda">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password <span class="required">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="register-password" placeholder="Buat password minimal 6 karakter">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Konfirmasi Password <span class="required">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-shield-halved input-icon"></i>
+                        <input type="password" id="register-confirm-password" placeholder="Ulangi password Anda">
+                    </div>
+                </div>
+                <button type="submit" class="btn-gold w-100" style="justify-content: center; margin-top: 10px;">
+                    <i class="fa-solid fa-user-plus"></i> Daftar Akun Baru
+                </button>
+            </form>
+
+            <div id="auth-error-msg" class="auth-error-alert" style="display: none;"></div>
+
+            <div class="auth-footer">
+                <a href="#" id="btn-open-firebase-config"><i class="fa-solid fa-gears"></i> Setup Firebase Database</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Config Modal -->
+    <div class="modal-overlay" id="firebase-config-modal" style="display: none;">
+        <div class="modal-content glass-card" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gears text-gold"></i> Setup Koneksi Firebase</h3>
+                <button type="button" class="btn-close-modal" id="btn-close-firebase-modal">&times;</button>
+            </div>
+            <div class="modal-body" style="padding-top: 10px;">
+                <p class="text-muted mb-3" style="font-size: 12px;">Untuk menyinkronkan data jurnal antar perangkat, silakan tempel kode <b>Firebase SDK Configuration</b> Anda di bawah ini:</p>
+                
+                <div class="form-group">
+                    <label for="firebase-config-json">Firebase Config JSON Object <span class="required">*</span></label>
+                    <textarea id="firebase-config-json" rows="8" style="width: 100%; border-radius: 12px; font-family: monospace; font-size: 12px;" placeholder='{&#10;  "apiKey": "AIzaSy...",&#10;  "authDomain": "prince-artha.firebaseapp.com",&#10;  "projectId": "prince-artha",&#10;  "storageBucket": "...",&#10;  "messagingSenderId": "...",&#10;  "appId": "..."&#10;}'></textarea>
+                </div>
+                
+                <button type="button" class="btn-gold w-100" id="btn-save-firebase-config" style="justify-content: center; margin-top: 10px;">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Konfigurasi & Hubungkan
+                </button>
+                
+                <p class="helper-text mt-3" style="font-size: 11px; text-align: center;">Konfigurasi disimpan secara lokal di browser Anda. Hubungkan satu kali pada setiap perangkat.</p>
+            </div>
+        </div>
     </div>
 
     <!-- Closing Modal Removed as Daily Logs are inputted directly -->
