@@ -1659,10 +1659,7 @@ function setupAuthFormListeners() {
                 }
             }
             
-            let message = "Gagal masuk: Periksa kembali username dan password Anda.";
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                message = "Username atau password yang Anda masukkan salah.";
-            }
+            let message = `Gagal masuk: ${error.message} (Kode: ${error.code})`;
             errorMsgDiv.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${message}`;
             errorMsgDiv.style.display = 'block';
         }
