@@ -1320,7 +1320,7 @@ function loadFirebaseConfig() {
     
     // Default Fallback: Hardcoded Firebase config for prince-arthafx so users don't see any setup modal!
     return {
-        apiKey: "AIzaSyDFQdU9xEKdPnr1Fep1O2wq14iBwqkGSsU",
+        apiKey: "AIzaSyDFQdU9xEKdPnr1Fepl02wql4iBwqkGSsU",
         authDomain: "prince-arthafx.firebaseapp.com",
         projectId: "prince-arthafx",
         storageBucket: "prince-arthafx.firebasestorage.app",
