@@ -1233,12 +1233,14 @@ function loadData() {
     }
 }
 
-// Register PWA Service Worker
+// Deactivate PWA Service Worker to avoid aggressive file caching
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker registered successfully.', reg))
-            .catch(err => console.log('Service Worker registration failed.', err));
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+            registration.unregister()
+                .then(() => console.log('Active Service Worker unregistered successfully.'))
+                .catch(err => console.error('Failed to unregister Service Worker:', err));
+        }
     });
 }
 
