@@ -48,15 +48,19 @@ let inputOutcome = 'PROFIT'; // PROFIT or LOSS default
 
 // Initialize Application on DOM Content Loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOMContentLoaded: App initialization starting...");
     // Initialize Firebase if config exists
     initFirebase();
     
+    console.log("Initializing systems...");
     initClock();
     setupNavigation();
     setupWizardListeners();
     setupJournalListeners();
     setupSettingsListeners();
+    console.log("Binding Auth Forms and Modals...");
     setupAuthFormListeners(); // Set up login, register, logout, and config modal listeners
+    console.log("Auth Forms and Modals bound successfully!");
     
     // Initial renders
     updateSidebarBalance();
@@ -1343,13 +1347,27 @@ function initFirebase() {
 }
 
 function saveFirebaseConfig() {
-    const jsonStr = document.getElementById('firebase-config-json').value.trim();
+    let jsonStr = document.getElementById('firebase-config-json').value.trim();
     if (!jsonStr) {
         alert('Mohon masukkan JSON Config Firebase!');
         return;
     }
+    
+    // Auto-extract everything inside { } if they pasted the full script code
+    if (jsonStr.includes('{') && jsonStr.includes('}')) {
+        const start = jsonStr.indexOf('{');
+        const end = jsonStr.lastIndexOf('}');
+        jsonStr = jsonStr.substring(start, end + 1);
+    }
+    
     try {
-        const parsed = JSON.parse(jsonStr);
+        // Clean up common JS object properties to make it valid strict JSON
+        let cleanedJson = jsonStr
+            .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":') // Wrap keys in quotes
+            .replace(/'/g, '"') // Swap single quotes to double quotes
+            .replace(/,\s*([}\]])/g, '$1'); // Remove trailing commas
+            
+        const parsed = JSON.parse(cleanedJson);
         if (!parsed.apiKey || !parsed.projectId) {
             throw new Error('Konfigurasi tidak lengkap (apiKey atau projectId tidak ada).');
         }
@@ -1358,7 +1376,7 @@ function saveFirebaseConfig() {
             alert('Koneksi Firebase Berhasil Disimpan!');
         }
     } catch (e) {
-        alert('Format JSON tidak valid: ' + e.message);
+        alert('Format JSON tidak valid: ' + e.message + '\n\nPastikan Anda menempelkan kode Firebase Config dengan benar.');
     }
 }
 
@@ -1502,11 +1520,10 @@ function setupAuthFormListeners() {
         errorMsgDiv.style.display = 'none';
         
         const username = document.getElementById('register-username').value.trim();
-        const reason = document.getElementById('register-reason').value.trim();
         const password = document.getElementById('register-password').value;
         const confirmPassword = document.getElementById('register-confirm-password').value;
         
-        if (!username || !reason || !password) {
+        if (!username || !password) {
             errorMsgDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Harap isi semua kolom wajib!';
             errorMsgDiv.style.display = 'block';
             return;
@@ -1546,7 +1563,7 @@ function setupAuthFormListeners() {
                 name: username,
                 email: email,
                 role: userProfileRole,
-                reason: reason,
+                reason: "Active User",
                 initialCapital: 150000000.00,
                 currentCapital: 150000000.00,
                 createdAt: new Date().toISOString()
@@ -1652,14 +1669,24 @@ function setupAuthFormListeners() {
     // Firebase Modal Config triggers
     document.getElementById('btn-open-firebase-config').addEventListener('click', (e) => {
         e.preventDefault();
-        document.getElementById('firebase-config-modal').style.display = 'flex';
+        console.log("Setup Firebase Database clicked!");
+        const modal = document.getElementById('firebase-config-modal');
+        console.log("Modal state before opening:", modal ? modal.style.display : "null");
+        if (modal) {
+            modal.style.display = 'flex';
+            console.log("Modal state after opening:", modal.style.display);
+        }
     });
     
     document.getElementById('btn-close-firebase-modal').addEventListener('click', () => {
+        console.log("Close Firebase Config modal clicked!");
         document.getElementById('firebase-config-modal').style.display = 'none';
     });
     
-    document.getElementById('btn-save-firebase-config').addEventListener('click', saveFirebaseConfig);
+    document.getElementById('btn-save-firebase-config').addEventListener('click', () => {
+        console.log("Save Firebase Config clicked!");
+        saveFirebaseConfig();
+    });
     
     let uploadedPhotoBase64 = null;
     
