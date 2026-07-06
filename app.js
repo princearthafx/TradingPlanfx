@@ -565,11 +565,14 @@ async function deleteJournalRecord(id) {
 
 // Config / Settings View
 function setupSettingsListeners() {
-    // Initial Setup Capital form submission
-    document.getElementById('config-capital-form').addEventListener('submit', async (e) => {
+    // Initial Setup Capital form submission - Bind directly to button click to prevent validation blocks
+    document.getElementById('btn-save-capital-settings').addEventListener('click', async (e) => {
         e.preventDefault();
-        const initial = parseFloat(document.getElementById('settings-initial-capital').value.replace(/[^0-9.-]/g, ''));
-        const current = parseFloat(document.getElementById('settings-current-capital').value.replace(/[^0-9.-]/g, ''));
+        const initialVal = document.getElementById('settings-initial-capital').value;
+        const currentVal = document.getElementById('settings-current-capital').value;
+        
+        const initial = parseFloat(initialVal.replace(/[^0-9.-]/g, ''));
+        const current = parseFloat(currentVal.replace(/[^0-9.-]/g, ''));
 
         if (isNaN(initial) || initial <= 0 || isNaN(current) || current <= 0) {
             alert('Masukkan nilai modal yang valid!');
