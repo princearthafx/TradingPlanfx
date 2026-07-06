@@ -17,8 +17,8 @@ let adminEquityChartInstance = null;
 
 // State Management
 let appState = {
-    initialCapital: 150000000.00,
-    currentCapital: 150000000.00,
+    initialCapital: 10000000.00,
+    currentCapital: 10000000.00,
     trades: [] // Starts clean
 };
 
@@ -619,8 +619,8 @@ function setupSettingsListeners() {
         if (confirm('PERINGATAN! Ini akan menghapus seluruh data capital dan jurnal Anda selamanya. Lanjutkan?')) {
             localStorage.removeItem('prince_artha_trading_state');
             appState = {
-                initialCapital: 150000000.00,
-                currentCapital: 150000000.00,
+                initialCapital: 10000000.00,
+                currentCapital: 10000000.00,
                 trades: []
             };
             renderAll();
@@ -948,7 +948,7 @@ async function loadMockDataEngine() {
         // 2. Set user initial capital in users document
         const userRef = db.collection('users').doc(currentFirebaseUser.uid);
         await userRef.set({
-            initialCapital: 150000000.00,
+            initialCapital: 10000000.00,
             currentCapital: 379202860.00,
             role: userProfileRole
         }, { merge: true });
@@ -1193,7 +1193,7 @@ async function loadMockDataEngine() {
                 pair: 'XAUUSD',
                 date: '2026-06-08',
                 day: 'Monday',
-                capitalAllocated: 150000000,
+                capitalAllocated: 10000000,
                 actualPnl: 12000000, // +8%
                 actualPnlPercent: 8.0,
                 emotion: 'Patient',
@@ -1227,8 +1227,8 @@ function loadData() {
             if (hasOldSchema) {
                 console.log("Old schema detected. Resetting database for a clean start.");
                 appState = {
-                    initialCapital: 150000000.00,
-                    currentCapital: 150000000.00,
+                    initialCapital: 10000000.00,
+                    currentCapital: 10000000.00,
                     trades: []
                 };
                 saveData();
@@ -1263,7 +1263,7 @@ function setupGrowthPlanner() {
         
         // Re-sync with sidebar balance updates if changed
         startCapitalInput.addEventListener('focus', () => {
-            if (parseFloat(startCapitalInput.value) === 150000000 && appState.currentCapital !== 150000000) {
+            if (parseFloat(startCapitalInput.value) === 10000000 && appState.currentCapital !== 10000000) {
                 startCapitalInput.value = Math.round(appState.currentCapital);
                 renderGrowthSimulation();
             }
@@ -1281,7 +1281,7 @@ function renderGrowthSimulation() {
     
     if (!startCapitalInput || !growthSlider || !tbody) return;
     
-    const startCapital = parseFloat(startCapitalInput.value) || 150000000;
+    const startCapital = parseFloat(startCapitalInput.value) || 10000000;
     const growthRate = parseInt(growthSlider.value, 10) || 5;
     
     rateDisplay.innerText = `${growthRate}%`;
@@ -1421,8 +1421,8 @@ function setupAuthListener() {
                     name: user.displayName || 'Trading User',
                     email: user.email,
                     role: userProfileRole,
-                    initialCapital: 150000000.00,
-                    currentCapital: 150000000.00,
+                    initialCapital: 10000000.00,
+                    currentCapital: 10000000.00,
                     createdAt: new Date().toISOString()
                 });
                 
@@ -1453,8 +1453,8 @@ function setupAuthListener() {
             }
             
             // Update local appState with Firestore data
-            appState.initialCapital = userData.initialCapital || 150000000.00;
-            appState.currentCapital = userData.currentCapital || 150000000.00;
+            appState.initialCapital = userData.initialCapital || 10000000.00;
+            appState.currentCapital = userData.currentCapital || 10000000.00;
             
             // 2. Listen in real-time to User's Trades
             subscribeToUserTrades(user.uid);
@@ -1463,8 +1463,8 @@ function setupAuthListener() {
             currentFirebaseUser = null;
             userProfileRole = 'user';
             appState = {
-                initialCapital: 150000000.00,
-                currentCapital: 150000000.00,
+                initialCapital: 10000000.00,
+                currentCapital: 10000000.00,
                 trades: []
             };
             
@@ -1589,8 +1589,8 @@ function setupAuthFormListeners() {
                 email: email,
                 role: userProfileRole,
                 reason: "Active User",
-                initialCapital: 150000000.00,
-                currentCapital: 150000000.00,
+                initialCapital: 10000000.00,
+                currentCapital: 10000000.00,
                 createdAt: new Date().toISOString()
             });
             
@@ -1657,8 +1657,8 @@ function setupAuthFormListeners() {
                         email: email,
                         role: "admin",
                         reason: "Main Administrator",
-                        initialCapital: 150000000.00,
-                        currentCapital: 150000000.00,
+                        initialCapital: 10000000.00,
+                        currentCapital: 10000000.00,
                         createdAt: new Date().toISOString()
                     });
                     
@@ -1872,7 +1872,7 @@ async function viewSelectedUserDashboard(userId) {
                 });
                 
                 // Calculate metrics
-                let initialCapital = user.initialCapital || 150000000.00;
+                let initialCapital = user.initialCapital || 10000000.00;
                 let closedPnl = 0;
                 let winDays = 0;
                 let lossDays = 0;

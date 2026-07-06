@@ -11,7 +11,7 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=2.0.2">
+    <link rel="stylesheet" href="style.css?v=2.0.3">
     <!-- Chart.js for visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- PWA Config -->
@@ -61,7 +61,7 @@
             <div class="sidebar-footer">
                 <div class="capital-card">
                     <span class="label">MODAL SAAT INI</span>
-                    <h2 class="value" id="current-capital-display">Rp 150.000.000</h2>
+                    <h2 class="value" id="current-capital-display">Rp 10.000.000</h2>
                     <div class="capital-growth">
                         <span id="pnl-total-percentage" class="growth-value pos">+0.00%</span>
                         <span class="growth-label">Net PnL</span>
@@ -211,7 +211,7 @@
                                     <label for="simulate-capital" style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 13px;">Saldo Awal Simulasi (IDR)</label>
                                     <div class="input-icon-wrapper">
                                         <span class="input-icon">Rp</span>
-                                        <input type="number" id="simulate-capital" value="150000000" min="1000" step="any" style="width: 100%; padding: 10px 12px 10px 36px; background-color: rgba(5,9,16,0.6); border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-light); font-family: var(--font-body); font-weight: 600;">
+                                        <input type="number" id="simulate-capital" value="10000000" min="1000" step="any" style="width: 100%; padding: 10px 12px 10px 36px; background-color: rgba(5,9,16,0.6); border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-light); font-family: var(--font-body); font-weight: 600;">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -292,7 +292,7 @@
                                     <label for="plan-capital">Modal Terkait (IDR) <span class="required">*</span></label>
                                     <div class="input-icon-wrapper">
                                         <span class="input-icon">Rp</span>
-                                        <input type="text" id="plan-capital" value="150000000" required>
+                                        <input type="text" id="plan-capital" value="10000000" required>
                                     </div>
                                 </div>
 
@@ -523,7 +523,7 @@
                                         <label for="settings-initial-capital">Modal Awal Akun (IDR)</label>
                                         <div class="input-icon-wrapper">
                                             <span class="input-icon">Rp</span>
-                                            <input type="text" id="settings-initial-capital" value="150000000" required>
+                                            <input type="text" id="settings-initial-capital" value="10000000" required>
                                         </div>
                                         <span class="helper-text">Ini akan mereset modal dasar akun Anda dan mengkalkulasi ulang PnL keseluruhan.</span>
                                     </div>
@@ -531,7 +531,7 @@
                                         <label for="settings-current-capital">Modal Berjalan Saat Ini (IDR)</label>
                                         <div class="input-icon-wrapper">
                                             <span class="input-icon">Rp</span>
-                                            <input type="text" id="settings-current-capital" value="150000000" required>
+                                            <input type="text" id="settings-current-capital" value="10000000" required>
                                         </div>
                                         <span class="helper-text">Anda bisa mengubah nilai ini secara manual jika menyetor atau menarik dana.</span>
                                     </div>
@@ -608,11 +608,11 @@
                                     <div class="user-pnl-summary">
                                         <div class="summary-item">
                                             <span class="label">MODAL AWAL</span>
-                                            <span class="value" id="admin-initial-capital">Rp 150.000.000</span>
+                                            <span class="value" id="admin-initial-capital">Rp 10.000.000</span>
                                         </div>
                                         <div class="summary-item">
                                             <span class="label">SALDO SAAT INI</span>
-                                            <span class="value" id="admin-current-capital">Rp 150.000.000</span>
+                                            <span class="value" id="admin-current-capital">Rp 10.000.000</span>
                                         </div>
                                         <div class="summary-item">
                                             <span class="label">NET PNL</span>
@@ -826,6 +826,6 @@
     <div class="trading-motto">"Masio Lunyu Kudu Tetep Menek"</div>
 
     <!-- Custom JS -->
-    <script src="app.js?v=2.0.2"></script>
+    <script src="app.js?v=2.0.3"></script>
 </body>
 </html>
