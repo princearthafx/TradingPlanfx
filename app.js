@@ -1410,25 +1410,31 @@ function setupAuthListener() {
             
             // 1. Fetch user role and initial details from Firestore
             const userRef = db.collection('users').doc(user.uid);
-            let userDoc = await userRef.get();
+            let userDoc = null;
             
-            if (!userDoc.exists) {
-                const isFirstAccount = (user.email === ADMIN_EMAIL);
-                userProfileRole = isFirstAccount ? 'admin' : 'user';
-                
-                await userRef.set({
-                    uid: user.uid,
-                    name: user.displayName || 'Trading User',
-                    email: user.email,
-                    role: userProfileRole,
-                    initialCapital: 10000000.00,
-                    currentCapital: 10000000.00,
-                    createdAt: new Date().toISOString()
-                });
-                
+            try {
                 userDoc = await userRef.get();
-            } else {
-                userProfileRole = userDoc.data().role || 'user';
+                if (!userDoc.exists) {
+                    const isFirstAccount = (user.email === ADMIN_EMAIL);
+                    userProfileRole = isFirstAccount ? 'admin' : 'user';
+                    
+                    await userRef.set({
+                        uid: user.uid,
+                        name: user.displayName || 'Trading User',
+                        email: user.email,
+                        role: userProfileRole,
+                        initialCapital: 10000000.00,
+                        currentCapital: 10000000.00,
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    userDoc = await userRef.get();
+                } else {
+                    userProfileRole = userDoc.data().role || 'user';
+                }
+            } catch (dbErr) {
+                console.error("Firestore database read failed, using profile fallbacks:", dbErr);
+                userProfileRole = (user.email === ADMIN_EMAIL) ? 'admin' : 'user';
             }
             
             // Strict Override: If email matches ADMIN_EMAIL, force role to admin instantly!
@@ -1437,7 +1443,7 @@ function setupAuthListener() {
                 userRef.set({ role: 'admin' }, { merge: true }).catch(e => console.error("Admin role update error:", e));
             }
             
-            const userData = userDoc.exists ? userDoc.data() : {};
+            const userData = (userDoc && userDoc.exists) ? userDoc.data() : {};
             
             // Update sidebar info
             document.getElementById('user-display-name').innerText = userData.name || user.displayName || 'Trading User';
